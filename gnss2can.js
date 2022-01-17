@@ -5,6 +5,10 @@ const pipeoutPath =  '/var/run/rexgen/can0/tx';
 var pipeout = fs.createWriteStream(pipeoutPath);
 const debug = console.log; // Set to false to remove debug
 
+const latlngident = 0x12a;
+const altsatident = 0x12b;
+const spdcrsident = 0x12c;
+
 const readFileByLine = (name, callback) => {
 	const lineReader = readline.createInterface({ input: fs.createReadStream(name) });
 
@@ -119,7 +123,7 @@ GNSS.prototype.pipe = function (streamout)
 		SendCan(
 			streamout,
 			this['timestamp'],
-			0x12a,
+			latlngident,
 			8,
 			float32ToHexString(this['latitude'], ' ') + ' ' + float32ToHexString(this['longitude'], ' ')
 		);
@@ -128,7 +132,7 @@ GNSS.prototype.pipe = function (streamout)
 		SendCan(
 			streamout,
 			this['timestamp'],
-			0x12b,
+			altsatident,
 			8,
 			float32ToHexString(this['altitude'], ' ') + ' ' + float32ToHexString(this['satellites'], ' ')
 		);
@@ -137,7 +141,7 @@ GNSS.prototype.pipe = function (streamout)
 		SendCan(
 			streamout,
 			this['timestamp'],
-			0x12c,
+			spdcrsident,
 			8,
 			float32ToHexString(this['speed-over-ground'], ' ') + ' ' + float32ToHexString(this['course'], ' ')
 		);
