@@ -1,9 +1,10 @@
 var fs = require('fs');
 var readline = require('readline');
 const pipeinPath = '/dev/ttymxc1';
-const pipeoutPath =  '/var/run/rexgen/can0/tx';
-var pipeout = fs.createWriteStream(pipeoutPath);
-const debug = console.log; // Set to false to remove debug
+const can0pipePath =  '/var/run/rexgen/can0/tx';
+const can1pipePath =  '/var/run/rexgen/can1/tx';
+var outputstream = process.stdout; 
+const debug = false; //console.log; // Set to false to remove debug
 
 const latlngident = 0x12a;
 const altsatident = 0x12b;
@@ -15,16 +16,6 @@ const readFileByLine = (name, callback) => {
 	lineReader.on('line', line => { 
 		callback && callback(line);
  	});
-}
-
-async function run()
-{
-	while (true)
-	{
-		readFileByLine(pipeinPath, onGNSSLine);
-		debug && debug('pipe finish, waiting...');
-		await new Promise((resolve) => { setTimeout(resolve, 1000); });
-	}
 }
 
 function onGNSSLine(line)
@@ -45,9 +36,9 @@ function onGNSSLine(line)
 	if (gnss == null)
 		return;
 
-	debug && debug('gnss: ' + JSON.stringify(gnss));
+	//debug && debug('gnss: ' + JSON.stringify(gnss));
 
-	gnss.pipe(pipeout);
+	gnss.pipe(outputstream);
 }
 
 
@@ -152,6 +143,34 @@ function SendCan(streamout, timestamp, ident, dlc, data)
 	var canrow = `(${timestamp})   can0      ${ident.toString(16)}  [${dlc}]  ${data}`;
 	streamout.write(canrow + '\n');
 	debug && debug(canrow);
+}
+
+async function run()
+{
+	var arg = process.argv;
+	if (arg.length > 2)
+	{
+		if (arg[2].toLowerCase() == 'can0')
+		{
+			outputstream = fs.createWriteStream(can0pipePath);
+		}
+		else if (arg[2].toLowerCase() == 'can1')
+		{
+			outputstream = fs.createWriteStream(can1pipePath);
+		}
+		else
+		{
+			outputstream = fs.createWriteStream(arg[2]);
+		}
+	}
+	outputstream1 = fs.createWriteStream(can1pipePath);
+
+	while (true)
+	{
+		readFileByLine(pipeinPath, onGNSSLine);
+		debug && debug('pipe finish, waiting...');
+		await new Promise((resolve) => { setTimeout(resolve, 1000); });
+	}
 }
 
 run();
