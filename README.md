@@ -2,7 +2,7 @@
 Sample code for using ReXgen in Linux.
 
 Usage:
-node gnss2can.js can0
+node gnss2can.js can0<br/>
 node gnss2can.js can1
 node gnss2can.js myfile
 node gnss2can.js > /path/to/output
