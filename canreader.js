@@ -28,8 +28,6 @@ can.prototype.pipe = function (output)
 
 can.prototype.onread = function (line)
 {
-	debug && debug('line: ' + line);
-	return;
 	const arr = line.split(/\s+/);
 	if (arr.length < 4)
 		return;
