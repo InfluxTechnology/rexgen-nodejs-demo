@@ -5,7 +5,7 @@ import re
 import time
 
 while True:
-	with open('./can', 'a') as f:
+	with open('/var/run/rexgen/can0/rx', 'a') as f:
 		timestamp = 12345
 		channel = 0
 		ident = 298
